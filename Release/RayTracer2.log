@@ -1,0 +1,6 @@
+﻿  RayTrace.cpp
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\RayTrace.h(9,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\file.h(17,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\RayTrace.cpp(14,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
+  RayTracer2.vcxproj -> C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\RayTracer2.exe
