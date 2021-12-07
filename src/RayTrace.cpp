@@ -82,7 +82,7 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 			else
 			{
 				L = glm::normalize(glm::vec3(light[i]->direction));
-				shadowRay = Ray(hit.position + (0.001f * N), glm::vec3(light[i]->direction));
+				shadowRay = Ray(hit.position + (0.001f * N), L);
 			}
 
 			//check if shadow ray hits an object (if it does, that means another object is blocking the light from reaching our intersection)
@@ -93,10 +93,21 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 				
 				//scene->geometry[j] != hit.object && 
 				// && R != 0.0f && blockingHit.distance < R
-				if (scene->geometry[j] != hit.object && blockingHit.intersects && R != 0.0f && blockingHit.distance < R)
+				if (light[i]->isPoint)
 				{
-					visible = false;
-					break; //skip adding in the bling-phong for this light if not visible
+					if (scene->geometry[j] != hit.object && blockingHit.intersects && blockingHit.distance < R)
+					{
+						visible = false;
+						break; //skip adding in the bling-phong for this light if not visible
+					}
+				}
+				else //directional light
+				{
+					if (scene->geometry[j] != hit.object && blockingHit.intersects)
+					{
+						visible = false;
+						break;
+					}
 				}
 			}
 
@@ -121,10 +132,14 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 		//color = glm::vec4(hit.normal, 1.0f);
 	}
 
+	/*
 	if (depth == 0)
 		return 255.0f * abs(color);
 	else
 		return abs(color);
+	*/
+
+	return abs(color);
 }
 
 int main(int argc, char* argv[])
@@ -152,9 +167,9 @@ int main(int argc, char* argv[])
 	{
 		for (int i = 0; i < width; i++)
 		{
-			prep.push_back((BYTE)(pixels[i][j])[2]);
-			prep.push_back((BYTE)(pixels[i][j])[1]);
-			prep.push_back((BYTE)(pixels[i][j])[0]);
+			prep.push_back((BYTE)(255.0f * (pixels[i][j])[2]));
+			prep.push_back((BYTE)(255.0f * (pixels[i][j])[1]));
+			prep.push_back((BYTE)(255.0f * (pixels[i][j])[0]));
 		}
 	}
 
