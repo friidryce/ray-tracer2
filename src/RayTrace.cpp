@@ -63,6 +63,7 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 		glm::vec3 N = hit.normal;
 		glm::vec3 V = hit.toRay;
 		
+		
 		for (unsigned int i = 0; i < light.size(); i++) //go through every light source
 		{
 			visible = true; //reset visibility variable for next light
@@ -84,12 +85,14 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 				shadowRay = Ray(hit.position + (0.001f * N), glm::vec3(light[i]->direction));
 			}
 
-			//check if shadow ray hits a triangle (if it does, that means another triangle is blocking the light from reaching our intersection)
+			//check if shadow ray hits an object (if it does, that means another object is blocking the light from reaching our intersection)
 			for (unsigned int j = 0; j < scene->geometry.size(); j++)
 			{
 				
 				Intersection blockingHit = Intersection(shadowRay, scene->geometry[j]);
 				
+				//scene->geometry[j] != hit.object && 
+				// && R != 0.0f && blockingHit.distance < R
 				if (scene->geometry[j] != hit.object && blockingHit.intersects && R != 0.0f && blockingHit.distance < R)
 				{
 					visible = false;
@@ -97,19 +100,17 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 				}
 			}
 
-			if (visible) //shade the triangle with the blinn-phong contribution from this light if it's not obstructed
+			if (visible) //shade the object with the blinn-phong contribution from this light if it's not obstructed
 			{
-				//glm::dot(N, H)
-				//glm::vec3 H = glm::normalize(V + L);
-				glm::vec3 rDir = glm::normalize(glm::reflect(L, N));
+				glm::vec3 H = glm::normalize(V + L);
 				sum += ((light[i]->color / (scene->attenuation[0] + (scene->attenuation[1] * R) + (scene->attenuation[2] * (R * R)))) *
-					   ((diffuse * glm::max(glm::dot(N, L), 0.0f)) + (specular * pow(glm::max(glm::dot(V, rDir), 0.0f), shininess))));
+					   ((diffuse * glm::max(glm::dot(N, L), 0.0f)) + (specular * pow(glm::max(glm::dot(N, H), 0.0f), shininess))));
 			}
 		}
 
 		color = ambient + emision + sum;
 
-		glm::vec3 reflectionDir = glm::normalize(glm::reflect(V, N));
+		glm::vec3 reflectionDir = glm::normalize(glm::reflect(-V, N));
 
 		glm::vec3 offset = 0.001f * N;
 		Ray ray2 = Ray(hit.position + offset, reflectionDir);
@@ -117,6 +118,7 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 		Intersection hit2 = Intersection(ray2, scene);
 		color += specular * FindColor(hit2, depth+1);
 
+		//color = glm::vec4(hit.normal, 1.0f);
 	}
 
 	return 255.0f*color;

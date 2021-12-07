@@ -31,6 +31,6 @@ Geometry::Geometry(Material m, glm::vec3 center, float radius, glm::mat4 trans, 
 	v1 = glm::vec3(0, 0, 0);
 	v2 = glm::vec3(0, 0, 0);
 	v3 = glm::vec3(0, 0, 0);
-	n = glm::vec3(0, 0, 0);
+	n = glm::vec3(1, 0, 0);
 }
 

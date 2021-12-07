@@ -1,5 +1,32 @@
 #include "Intersection.h"
 
+void IntersectCircle(glm::vec3 origin, glm::vec3 direction, 
+                     glm::vec3 center, float radius, float& distance, bool &intersects, glm::vec3 &iPos, glm::vec3 &iNormal)
+{
+    glm::vec3 oc = origin - center;
+    float a = glm::dot(direction, direction);
+    float b = 2.0 * glm::dot(oc, direction);
+    float c = glm::dot(oc, oc) - radius * radius;
+    float discriminant = b * b - 4 * a * c;
+
+    if (discriminant < 0) {
+        intersects = false;
+        distance = FLT_MAX;
+    }
+    else {
+        intersects = true;
+        distance = (-b - sqrt(discriminant)) / (2.0 * a);
+        float distance2 = (-b + sqrt(discriminant)) / (2.0 * a);
+        if (distance < 0)
+            distance = distance2;
+        if (distance2 < distance)
+            distance = distance2;
+
+        iPos = origin + distance * direction;
+        iNormal = glm::normalize(iPos - center);
+    }
+}
+
 Intersection::Intersection(const Ray ray, Geometry* geo)
 {
     if (geo->isTriangle)
@@ -26,16 +53,21 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
             intersects = true;
             position = l1 * geo->v1 + l2 * geo->v2 + l3 * geo->v3;
             normal = geo->n;
+
+            float ndot = glm::dot(normal, geo->v1);
+            if (ndot > 0)
+                normal = -normal;
+
             distance = glm::distance(ray.origin, position);
 
-            toRay = glm::normalize(position - ray.origin);
+            toRay = -ray.direction;
             object = geo;
         }
         else
         {
             intersects = false;
             position = glm::vec3(0, 0, 0);
-            normal = glm::vec3(1, 0, 0);
+            normal = glm::vec3(0, 0, 0);
             distance = FLT_MAX;
             toRay = glm::vec3(0, 0, 0);
             object = geo;
@@ -49,20 +81,40 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
 
         if (geo->scale == glm::mat4(1.0f)) //sphere
         {
+            /*
             if (glm::intersectRaySphere(ray.origin, ray.direction, geo->c, geo->r, iPos, iNormal))
             {
                 intersects = true;
                 position = iPos;
                 normal = glm::normalize(iNormal);
                 distance = glm::distance(ray.origin, position);
-                toRay = glm::normalize(position - ray.origin);
+                toRay = -ray.direction;
                 object = geo;
             }
             else
             {
                 intersects = false;
                 position = glm::vec3(0, 0, 0);
-                normal = glm::vec3(1, 0, 0);
+                normal = glm::vec3(0, 0, 0);
+                distance = FLT_MAX;
+                toRay = glm::vec3(0, 0, 0);
+                object = geo;
+            }
+            */
+            
+            IntersectCircle(ray.origin, ray.direction, geo->c, geo->r, distance, intersects, iPos, iNormal);
+
+            if (intersects)
+            {
+                position = iPos;
+                normal = glm::normalize(iNormal);
+                toRay = -ray.direction;
+                object = geo;
+            }
+            else
+            {
+                position = glm::vec3(0, 0, 0);
+                normal = glm::vec3(0, 0, 0);
                 distance = FLT_MAX;
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
@@ -89,23 +141,52 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
                 glm::vec3 viewPosition = glm::vec3(viewPosition4);
                 glm::vec4 position4 = geo->view * glm::vec4(viewPosition, 1.0f);
                 position = glm::vec3(position4);
-
+                
                 glm::vec3 viewNormal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->scale)) * iNormal);
                 normal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->view)) * viewNormal);
 
                 distance = glm::distance(ray.origin, position);
-                toRay = glm::normalize(position - ray.origin);
+                toRay = -ray.direction;
                 object = geo;
             }
             else
             {
                 intersects = false;
                 position = glm::vec3(0, 0, 0);
-                normal = glm::vec3(1, 0, 0);
+                normal = glm::vec3(0, 0, 0);
                 distance = FLT_MAX;
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
             }
+            
+
+            /*
+            IntersectCircle(modelOrigin, modelDirection, modelC, geo->r, distance, intersects, iPos, iNormal);
+
+            if (intersects)
+            {
+                glm::vec4 viewPosition4 = geo->scale * glm::vec4(iPos, 1.0f);
+                glm::vec3 viewPosition = glm::vec3(viewPosition4);
+                glm::vec4 position4 = geo->view * glm::vec4(viewPosition, 1.0f);
+                position = glm::vec3(position4);
+
+                glm::vec3 viewNormal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->scale)) * iNormal);
+                normal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->view)) * viewNormal);
+
+                distance = glm::distance(ray.origin, position);
+                toRay = -ray.direction;
+                object = geo;
+            }
+            else
+            {
+                position = glm::vec3(0, 0, 0);
+                normal = glm::vec3(0, 0, 0);
+                distance = FLT_MAX;
+                toRay = glm::vec3(0, 0, 0);
+                object = geo;
+            }
+            */
+            
         }
     }
 }
@@ -118,6 +199,7 @@ Intersection::Intersection(const Ray ray, Scene* scene)
     for (auto object : scene->geometry) 
     {
         Intersection hit_tmp = Intersection(ray, object);
+
         if (hit_tmp.distance < mindist)
         {
             mindist = hit_tmp.distance;
