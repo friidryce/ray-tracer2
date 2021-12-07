@@ -18,7 +18,13 @@ Ray RayTrace::RayThruPixel(Camera* cam, int i, int j, int width, int height)
 	float bScale = b * glm::tan(fovy_rad / 2.0f);
 	glm::vec3 d = glm::vec3(aScale, bScale, -1.0f);
 
-	return Ray(glm::vec3(0.0f, 0.0f, 0.0f), d); //return a Ray from eye (0,0,0) -> center of pixel (i, j), in view space
+
+	glm::vec3 w = glm::normalize(cam->eye - cam->target);
+	glm::vec3 u = glm::normalize(glm::cross(cam->up, w));
+	glm::vec3 v = glm::cross(w, u);
+	return Ray(cam->eye, glm::normalize(aScale*u+bScale*v-w));
+
+	//return Ray(glm::vec3(0.0f, 0.0f, 0.0f), d); //return a Ray from eye (0,0,0) -> center of pixel (i, j), in view space
 }
 
 vector<vector<glm::vec4>> RayTrace::Trace(Camera* cam, const int width, const int height)
@@ -33,7 +39,7 @@ vector<vector<glm::vec4>> RayTrace::Trace(Camera* cam, const int width, const in
 			Intersection hit = Intersection(ray, scene);
 			image[i][j] = FindColor(hit, 0);
 		}
-		cout << j << endl;
+		cout << j << " ";
 	}
 	return image;
 }
@@ -112,7 +118,7 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 
 		glm::vec3 reflectionDir = glm::normalize(glm::reflect(-V, N));
 
-		glm::vec3 offset = 0.001f * N;
+		glm::vec3 offset = 0.001f * reflectionDir;
 		Ray ray2 = Ray(hit.position + offset, reflectionDir);
 		
 		Intersection hit2 = Intersection(ray2, scene);
@@ -121,7 +127,7 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 		//color = glm::vec4(hit.normal, 1.0f);
 	}
 
-	return 255.0f*color;
+	return 255.0f*abs(color);
 }
 
 int main(int argc, char* argv[])

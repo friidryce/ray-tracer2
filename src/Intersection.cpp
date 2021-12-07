@@ -1,4 +1,5 @@
 #include "Intersection.h"
+#include <glm/gtx/string_cast.hpp>
 
 void IntersectCircle(glm::vec3 origin, glm::vec3 direction, 
                      glm::vec3 center, float radius, float& distance, bool &intersects, glm::vec3 &iPos, glm::vec3 &iNormal)
@@ -79,10 +80,11 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
         glm::vec3 iPos = glm::vec3(0,0,0);
         glm::vec3 iNormal;
 
-        if (geo->scale == glm::mat4(1.0f)) //sphere
+        if (geo->scale[0][0] == geo->scale[1][1] && geo->scale[1][1] == geo->scale[2][2]) //sphere
         {
-            /*
-            if (glm::intersectRaySphere(ray.origin, ray.direction, geo->c, geo->r, iPos, iNormal))
+            //std::cout << "sphere" << std::endl;
+            
+            /*if (glm::intersectRaySphere(ray.origin, -ray.direction, geo->c, geo->r, iPos, iNormal))
             {
                 intersects = true;
                 position = iPos;
@@ -99,15 +101,16 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
                 distance = FLT_MAX;
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
-            }
-            */
+            }*/
+            
+            
             
             IntersectCircle(ray.origin, ray.direction, geo->c, geo->r, distance, intersects, iPos, iNormal);
 
             if (intersects)
             {
                 position = iPos;
-                normal = glm::normalize(iNormal);
+                normal = glm::normalize(iPos - geo->c);
                 toRay = -ray.direction;
                 object = geo;
             }
@@ -119,9 +122,34 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
             }
+
+            //float delta = sqrt(pow(dot(ray.direction, ray.origin - geo->c), 2) - pow(glm::length(ray.origin - geo->c), 2) + pow(geo->r, 2));
+
+            //if (delta >= 0)
+            //{
+            //    intersects = true;
+            //    float t = dot(-ray.direction, ray.origin - geo->c) - delta;
+            //    position = ray.origin + t * ray.direction;
+            //    normal = normalize(position - geo->c);
+            //    distance = glm::distance(ray.origin, position);
+            //    //normal = glm::vec3(.5);
+            //    toRay = -ray.direction;
+            //    object = geo;
+            //}
+            //else
+            //{
+            //    intersects = false;
+            //    position = glm::vec3(0, 0, 0);
+            //    normal = glm::vec3(0, 0, 0);
+            //    distance = FLT_MAX;
+            //    toRay = glm::vec3(0, 0, 0);
+            //    object = geo;
+            //}
+
         }
         else
         {
+            //std::cout << "ellip" << std::endl;
             //Get a ray in world coordinate (revert view matrix transformation)
             glm::vec3 viewOrigin = glm::vec3(glm::inverse(geo->view) * glm::vec4(ray.origin, 1));
             glm::vec3 viewDirection = glm::normalize(glm::inverse(glm::mat3(geo->view)) * ray.direction);
@@ -144,6 +172,7 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
                 
                 glm::vec3 viewNormal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->scale)) * iNormal);
                 normal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->view)) * viewNormal);
+                //normal = glm::vec3(1);
 
                 distance = glm::distance(ray.origin, position);
                 toRay = -ray.direction;

@@ -31,6 +31,7 @@
 
 using namespace std;
 #include "file.h"
+#include <glm/gtx/string_cast.hpp>
 
 int canvas_width = 0;
 int canvas_height = 0;
@@ -357,7 +358,9 @@ void readfile(const char* filename, Scene* scene)
                         Material m = { ambient, diffuse, specular, emision, shininess };
 
                         //Add to scene
-                        scene->geometry.push_back(new Geometry(m, newC, r, transfstack.top(), scene->camera->view));
+                        //scene->geometry.push_back(new Geometry(m, newC, r, transfstack.top(), scene->camera->view));
+                        scene->geometry.push_back(new Geometry(m, C, r*transfstack.top()[0][0], transfstack.top(), glm::mat4(1)));
+                        //cout << glm::to_string(transfstack.top()) << endl;
                     }
 
                 }
@@ -384,9 +387,9 @@ void readfile(const char* filename, Scene* scene)
                         v3 = glm::vec3(p3[0], p3[1], p3[2]);
 
                         //Convert into camera view coordinate after transformations
-                        v1 = glm::vec3(scene->camera->view * glm::vec4(v1, 1.0f));
+                        /*v1 = glm::vec3(scene->camera->view * glm::vec4(v1, 1.0f));
                         v2 = glm::vec3(scene->camera->view * glm::vec4(v2, 1.0f));
-                        v3 = glm::vec3(scene->camera->view * glm::vec4(v3, 1.0f));
+                        v3 = glm::vec3(scene->camera->view * glm::vec4(v3, 1.0f));*/
 
                         //Assign material values
                         Material m = { ambient, diffuse, specular, emision, shininess };

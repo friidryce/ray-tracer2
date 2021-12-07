@@ -1,1 +1,2 @@
 C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\RayTracer2.exe
+C:\Users\Allen\Documents\UCSD\CSE 167\Final\Git\ray-tracer2\Release\RayTracer2.exe
