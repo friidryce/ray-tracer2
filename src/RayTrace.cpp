@@ -109,10 +109,10 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 		}
 
 		color = ambient + emision + sum;
-
+		
 		glm::vec3 reflectionDir = glm::normalize(glm::reflect(-V, N));
 
-		glm::vec3 offset = 0.001f * N;
+		glm::vec3 offset = 0.001f * reflectionDir;
 		Ray ray2 = Ray(hit.position + offset, reflectionDir);
 		
 		Intersection hit2 = Intersection(ray2, scene);
@@ -121,7 +121,10 @@ glm::vec4 RayTrace::FindColor(Intersection hit, int depth) //TODO
 		//color = glm::vec4(hit.normal, 1.0f);
 	}
 
-	return 255.0f*color;
+	if (depth == 0)
+		return 255.0f * abs(color);
+	else
+		return abs(color);
 }
 
 int main(int argc, char* argv[])

@@ -9,18 +9,21 @@ void IntersectCircle(glm::vec3 origin, glm::vec3 direction,
     float c = glm::dot(oc, oc) - radius * radius;
     float discriminant = b * b - 4 * a * c;
 
-    if (discriminant < 0) {
+    if (discriminant < 0.0f) {
         intersects = false;
         distance = FLT_MAX;
     }
     else {
         intersects = true;
         distance = (-b - sqrt(discriminant)) / (2.0 * a);
-        float distance2 = (-b + sqrt(discriminant)) / (2.0 * a);
-        if (distance < 0)
-            distance = distance2;
-        if (distance2 < distance)
-            distance = distance2;
+        float numerator = -b - sqrt(discriminant);
+
+        if (numerator > 0.0f)
+            distance = numerator / (2.0 * a);
+
+        numerator = -b + sqrt(discriminant);
+        if (numerator > 0.0f)
+            distance = numerator / (2.0 * a);
 
         iPos = origin + distance * direction;
         iNormal = glm::normalize(iPos - center);
@@ -81,7 +84,7 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
 
         if (geo->scale == glm::mat4(1.0f)) //sphere
         {
-            /*
+            
             if (glm::intersectRaySphere(ray.origin, ray.direction, geo->c, geo->r, iPos, iNormal))
             {
                 intersects = true;
@@ -95,13 +98,13 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
             {
                 intersects = false;
                 position = glm::vec3(0, 0, 0);
-                normal = glm::vec3(0, 0, 0);
+                normal = glm::vec3(0,1,0);
                 distance = FLT_MAX;
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
             }
-            */
-            
+
+            /*
             IntersectCircle(ray.origin, ray.direction, geo->c, geo->r, distance, intersects, iPos, iNormal);
 
             if (intersects)
@@ -119,6 +122,8 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
             }
+            */
+            
         }
         else
         {
@@ -200,11 +205,12 @@ Intersection::Intersection(const Ray ray, Scene* scene)
     {
         Intersection hit_tmp = Intersection(ray, object);
 
-        if (hit_tmp.distance < mindist)
-        {
-            mindist = hit_tmp.distance;
-            hit = hit_tmp;
-        }
+        if(hit_tmp.intersects)
+            if (hit_tmp.distance < mindist)
+            {
+                mindist = hit_tmp.distance;
+                hit = hit_tmp;
+            }
     }
 
     intersects = hit.intersects;
