@@ -1,6 +1,7 @@
-/**************************************************
-Light is a class for a camera object.
-*****************************************************/
+/**
+ * Data structure for point and directional lights 
+ */
+
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 

@@ -1,38 +1,8 @@
 #include "Intersection.h"
 
-void IntersectCircle(glm::vec3 origin, glm::vec3 direction, 
-                     glm::vec3 center, float radius, float& distance, bool &intersects, glm::vec3 &iPos, glm::vec3 &iNormal)
-{
-    glm::vec3 oc = origin - center;
-    float a = glm::dot(direction, direction);
-    float b = 2.0 * glm::dot(oc, direction);
-    float c = glm::dot(oc, oc) - radius * radius;
-    float discriminant = b * b - 4 * a * c;
-
-    if (discriminant < 0.0f) {
-        intersects = false;
-        distance = FLT_MAX;
-    }
-    else {
-        intersects = true;
-        distance = (-b - sqrt(discriminant)) / (2.0 * a);
-        float numerator = -b - sqrt(discriminant);
-
-        if (numerator > 0.0f)
-            distance = numerator / (2.0 * a);
-
-        numerator = -b + sqrt(discriminant);
-        if (numerator > 0.0f)
-            distance = numerator / (2.0 * a);
-
-        iPos = origin + distance * direction;
-        iNormal = glm::normalize(iPos - center);
-    }
-}
-
 Intersection::Intersection(const Ray ray, Geometry* geo)
 {
-    if (geo->isTriangle)
+    if (geo->isTriangle) //calculate ray-triangle intersection
     {
         glm::vec3 baryCoord;
 
@@ -45,6 +15,7 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
         glm::mat4 pointMatrix = glm::mat4(p1, p2, p3, p4);
         pointMatrix = glm::inverse(pointMatrix);
 
+        //Calculate barycentric coordinates
         glm::vec4 barycentric = pointMatrix * p0;
         float l1 = barycentric[0];
         float l2 = barycentric[1];
@@ -68,6 +39,7 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
         }
         else
         {
+            //Initialize garbage if it doesn't hit
             intersects = false;
             position = glm::vec3(0, 0, 0);
             normal = glm::vec3(0, 0, 0);
@@ -77,15 +49,15 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
         }
 
     }
-    else //Intersection Circle
+    else //calculate ray-sphere intersection
     {
         glm::vec3 iPos = glm::vec3(0,0,0);
         glm::vec3 iNormal;
 
-        if (geo->scale == glm::mat4(1.0f)) //sphere
+        if (geo->scale == glm::mat4(1.0f)) //sphere without transformations
         {
             
-            if (glm::intersectRaySphere(ray.origin, ray.direction, geo->c, geo->r, iPos, iNormal))
+            if (glm::intersectRaySphere(ray.origin, ray.direction, geo->c, geo->r, iPos, iNormal)) //if intersects
             {
                 intersects = true;
                 position = iPos;
@@ -94,38 +66,18 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
                 toRay = -ray.direction;
                 object = geo;
             }
-            else
+            else //if it doesn't
             {
+                //Initialize garbage
                 intersects = false;
                 position = glm::vec3(0, 0, 0);
                 normal = glm::vec3(0,1,0);
                 distance = FLT_MAX;
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
-            }
-
-            /*
-            IntersectCircle(ray.origin, ray.direction, geo->c, geo->r, distance, intersects, iPos, iNormal);
-
-            if (intersects)
-            {
-                position = iPos;
-                normal = glm::normalize(iNormal);
-                toRay = -ray.direction;
-                object = geo;
-            }
-            else
-            {
-                position = glm::vec3(0, 0, 0);
-                normal = glm::vec3(0, 0, 0);
-                distance = FLT_MAX;
-                toRay = glm::vec3(0, 0, 0);
-                object = geo;
-            }
-            */
-            
+            }      
         }
-        else
+        else //sphere with transformations
         {
             //Get a ray in world coordinate (revert view matrix transformation)
             glm::vec3 viewOrigin = glm::vec3(glm::inverse(geo->view) * glm::vec4(ray.origin, 1));
@@ -135,6 +87,7 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
             glm::vec3 modelOrigin = glm::vec3(glm::inverse(geo->scale) * glm::vec4(viewOrigin, 1));
             glm::vec3 modelDirection = glm::normalize(glm::inverse(glm::mat3(geo->scale)) * viewDirection);
 
+            //Get the center in pre-transformation coordinate (before transformation and view)
             glm::vec3 viewC = glm::vec3(glm::inverse(geo->view) * glm::vec4(geo->c, 1.0f));
             glm::vec3 modelC = glm::vec3(glm::inverse(geo->scale) * glm::vec4(viewC, 1.0f));
 
@@ -142,11 +95,13 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
             {
                 intersects = true;
 
+                //Redo transformations to calculate the position
                 glm::vec4 viewPosition4 = geo->scale * glm::vec4(iPos, 1.0f);
                 glm::vec3 viewPosition = glm::vec3(viewPosition4);
                 glm::vec4 position4 = geo->view * glm::vec4(viewPosition, 1.0f);
                 position = glm::vec3(position4);
                 
+                //Redo transformations by the inverse transpose to calculate the normal
                 glm::vec3 viewNormal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->scale)) * iNormal);
                 normal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->view)) * viewNormal);
 
@@ -156,42 +111,14 @@ Intersection::Intersection(const Ray ray, Geometry* geo)
             }
             else
             {
+                //Initialize garbage if it doesn't hit
                 intersects = false;
                 position = glm::vec3(0, 0, 0);
                 normal = glm::vec3(0, 0, 0);
                 distance = FLT_MAX;
                 toRay = glm::vec3(0, 0, 0);
                 object = geo;
-            }
-            
-
-            /*
-            IntersectCircle(modelOrigin, modelDirection, modelC, geo->r, distance, intersects, iPos, iNormal);
-
-            if (intersects)
-            {
-                glm::vec4 viewPosition4 = geo->scale * glm::vec4(iPos, 1.0f);
-                glm::vec3 viewPosition = glm::vec3(viewPosition4);
-                glm::vec4 position4 = geo->view * glm::vec4(viewPosition, 1.0f);
-                position = glm::vec3(position4);
-
-                glm::vec3 viewNormal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->scale)) * iNormal);
-                normal = glm::normalize(glm::inverseTranspose(glm::mat3(geo->view)) * viewNormal);
-
-                distance = glm::distance(ray.origin, position);
-                toRay = -ray.direction;
-                object = geo;
-            }
-            else
-            {
-                position = glm::vec3(0, 0, 0);
-                normal = glm::vec3(0, 0, 0);
-                distance = FLT_MAX;
-                toRay = glm::vec3(0, 0, 0);
-                object = geo;
-            }
-            */
-            
+            }   
         }
     }
 }

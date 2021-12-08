@@ -1,5 +1,9 @@
 #pragma once
 
+/** 
+ * Data structure for a scene, holds information on the camera, objects present, and lights present
+ */
+
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,15 +25,15 @@ public:
 	{
 		camera = new Camera;
 	}
-
-	//don't forget to delete all the geometry in scene
+	
 	~Scene()
 	{
 		delete camera;
 
-		/*
 		for(auto i: geometry) //delete geometry
 			delete i;
-		*/
+
+		for (auto i : light) //delete light
+			delete i;
 	}
 };

@@ -6,8 +6,6 @@ size 640 480
 
 camera 0 -4 4 0 -1 0 0 1 1 45
 
-
-
 maxverts 8
 
 vertex -1 -1 -1

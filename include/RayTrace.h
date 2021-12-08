@@ -1,15 +1,18 @@
+//Initialization for the driver program
+
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+
 #include "Camera.h"
 #include "Scene.h"
 #include "Ray.h"
 #include "Intersection.h"
-#include "Material.h" //probably don't need this in final
+#include "Material.h"
 #include "file.h";
+#include <iostream>
 #include <vector>
 #include <math.h>
-#include <iostream>
 
 #ifndef __RAYTRACE_H__
 #define __RAYTRACE_H__

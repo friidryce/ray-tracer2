@@ -1,3 +1,7 @@
+/**
+ * Data structure for triangles or spheres
+ */
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/normal.hpp>

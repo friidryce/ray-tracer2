@@ -1,3 +1,7 @@
+/**
+ * Container for information on a ray-object intersection
+ */
+
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -12,7 +16,6 @@
 #ifndef __INTERSECTION_H__
 #define __INTERSECTION_H__
 
-//Container for a Ray-Object intersection
 class Intersection
 {
 public:
@@ -22,8 +25,9 @@ public:
 	bool intersects; //whether the intersection point is in the geometry
 	Geometry* object; //pointer to object;
 	float distance; //distance to the source of the ray
-	Intersection(const Ray ray, Geometry* geo);
-	Intersection(const Ray ray, Scene* scene);
+
+	Intersection(const Ray ray, Geometry* geo); //ray-object intersection
+	Intersection(const Ray ray, Scene* scene); //ray-scene intersection
 
 	Intersection() //trivial default constructor
 	{

@@ -1,5 +1,6 @@
 #include "Geometry.h"
 
+//Create a triangle geometry
 Geometry::Geometry(Material m, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
 	//Useful
@@ -17,6 +18,7 @@ Geometry::Geometry(Material m, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	this->view = glm::mat4(1.0f);
 }
 
+//Create a sphere geometry
 Geometry::Geometry(Material m, glm::vec3 center, float radius, glm::mat4 trans, glm::mat4 view)
 {
 	//Useful
@@ -24,8 +26,8 @@ Geometry::Geometry(Material m, glm::vec3 center, float radius, glm::mat4 trans, 
 	material = m;
 	c = center;
 	r = radius;
-	scale = trans;
-	this->view = view;
+	scale = trans; //transformation matrix of the sphere
+	this->view = view; //view matrix passed to convert coordinates later
 
 	//Garbage
 	v1 = glm::vec3(0, 0, 0);

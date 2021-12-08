@@ -1,3 +1,7 @@
+/**
+ * Data structure for a ray
+ */
+
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>

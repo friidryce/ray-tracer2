@@ -1,6 +1,20 @@
-﻿  RayTrace.cpp
-C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\RayTrace.h(9,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\file.h(17,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\RayTrace.cpp(14,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+﻿  Intersection.cpp
+  RayTrace.cpp
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\RayTrace.h(12,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\file.h(15,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\RayTrace.cpp(19,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  file.cpp
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\include\file.h(15,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\file.cpp(175,48): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\file.cpp(176,49): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\file.cpp(304,57): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\file.cpp(305,57): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\file.cpp(306,57): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\src\file.cpp(75,21): warning C4101: 'i': unreferenced local variable
+  Generating Code...
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
+Ray.obj : warning LNK4204: 'C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\vc142.pdb' is missing debugging information for referencing module; linking object as if no debug info
+Light.obj : warning LNK4204: 'C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\vc142.pdb' is missing debugging information for referencing module; linking object as if no debug info
+Geometry.obj : warning LNK4204: 'C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\vc142.pdb' is missing debugging information for referencing module; linking object as if no debug info
+Camera.obj : warning LNK4204: 'C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\vc142.pdb' is missing debugging information for referencing module; linking object as if no debug info
   RayTracer2.vcxproj -> C:\Users\Jason\Documents\UCSD\CSE 167\ray-tracer2\Release\RayTracer2.exe

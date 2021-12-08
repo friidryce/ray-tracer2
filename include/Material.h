@@ -1,6 +1,7 @@
-/**************************************************
+/**
+ * Data structure for material lighting parameters
+ */
 
-*****************************************************/
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 
