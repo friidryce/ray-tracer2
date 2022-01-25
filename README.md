@@ -1,4 +1,6 @@
-<h1>Simple CPU-based Ray-Tracer in C++</h1>
+<h1>Simple CPU-based Ray-Tracer in C++</h1> 
+
+**Authors: Jason Au, Allen Weng**
 
 This program will take in a scene file (.test), parse it, raytrace the scene, and output it as <input_file_name>.png.
 
@@ -14,18 +16,51 @@ As of now, this program can be ran by compiling with the .sln file in Visual Stu
   
 <h3>Inputfile Format</h3>
 
-• # comments: This is a line of comments. Ignore any line starting with a #.
-
-• Blank line: Blank lines are ignored.
-
-• command parameter1 parameter2 ...: Syntax for writing parsable information.
+- \# comments: This is a line of comments. Ignore any line starting with a #
+- Blank line: Blank lines are ignored.
+- command parameter1 parameter2 ...: Syntax for writing parsable information.
 
 <h3>Mandatory Commands</h3>
 
-• size width height: The size command must be the first command of the file, which
+- size width height: The size command must be the first command of the file, which
 controls the image size.
-
-• maxdepth depth: The maximum depth (number of bounces) for a ray (default is 5).
-
-• output filename: The name of the image output file (default is raytrace.png).
+- maxdepth depth: The maximum depth (number of bounces) for a ray (default is 5).
+- output filename: The name of the image output file (default is raytrace.png).
   
+<h3>Camera</h3>
+
+- camera lookfromx lookfromy lookfromz lookatx lookaty lookatz upx upy
+upz fov: 
+  - Specifies camera properies. 
+  - fov is in the y direction.
+  - fov in the x direction will be determined by the image size. 
+  - The world aspect ratio (distinct from the width and height that determine image aspect ratio) is always 1
+  - A sphere at the center of a screen will look like a circle, not an ellipse, independent of the image aspect ratio.
+
+<h3>Geometry</h3>
+
+- sphere x y z radius: Defines a sphere with a given position and radius.
+- vertex x y z: Defines a vertex at the given location. The vertex is put into a pile, starting to be numbered at 0.
+- tri v1 v2 v3: Create a triangle out of the vertices involved (which have previously been specified with the vertex command). The vertices are assumed to be specified in counterclockwise order. 
+
+<h3>Transformations</h3>
+
+- translate x y z: A translation 3-vector.
+- rotate x y z angle: Rotate by angle (in degrees) about the given axis.
+- scale x y z: Scale by the corresponding amount in each axis (a non-uniform scaling).
+- pushTransform: Push the current modeling transform on the stack.
+- popTransform: Pop the current transform from the stack.
+
+<h3>Lights</h3>
+
+- directional x y z r g b: The direction to the directional light source and the color in RGB.
+- point x y z r g b: The location of a point light source and the color in RGB.
+- attenuation const linear quadratic: Sets the constant, linear and quadratic attenuations (default 1,0,0).
+- ambient r g b: The global ambient color to be added for each object (default is 0.2,0.2,0.2).
+
+<h3>Materials</h3>
+
+- diffuse r g b: specifies the diffuse color of the geometry surface.
+- specular r g b: specifies the specular color of the geometry surface.
+- shininess s: specifies the shininess of the geometry surface.
+- emission r g b: gives the emissive color of the geometry surface.
